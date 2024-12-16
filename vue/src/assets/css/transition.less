@@ -1,0 +1,63 @@
+/* fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.28s;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
+
+/* fade-transform */
+.fade-transform--move,
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.fade-transform-leave-active {
+  /* 使用 relative 替代 absolute，避免影响布局 */
+  position: relative;
+}
+
+.fade-transform-enter {
+  opacity: 0;
+  transform: translate3d(-30px, 0, 0); /* 使用 translate3d 代替 translateX */
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translate3d(30px, 0, 0); /* 使用 translate3d 代替 translateX */
+}
+
+/* breadcrumb transition */
+.breadcrumb-enter-active,
+.breadcrumb-leave-active {
+  transition: all 0.5s ease-out;
+}
+
+.breadcrumb-enter,
+.breadcrumb-leave-active {
+  opacity: 0;
+  transform: translate3d(20px, 0, 0); /* 使用 translate3d 代替 translateX */
+}
+
+.breadcrumb-move {
+  transition: all 0.5s ease-out;
+}
+
+.breadcrumb-leave-active {
+  /* 使用 relative 替代 absolute，避免影响布局 */
+  position: relative;
+}
+
+/* 防止横向滚动条 */
+body {
+  overflow-x: hidden; /* 隐藏横向滚动条 */
+}
+
+/* 清除 focus-visible 的默认样式 */
+:focus-visible {
+  outline: none;
+}
