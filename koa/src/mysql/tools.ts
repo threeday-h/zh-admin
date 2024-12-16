@@ -115,25 +115,27 @@ async function updateRecord(params: { db: any; tableName: string; data: Record<s
 }
 
 /**
- * @description: 通用查询函数，支持多表连接查询，同时支持分页、排序和多条件过滤（包括模糊查询与“或”条件）。
- * @param {any} db - 数据库连接对象，通常是 MySQL、PostgreSQL 等数据库的连接实例。
- * @param {string} tableName - 主表名称，用于指定查询的基础表。
- * @param {Record<string, any>} filters - 查询条件字段和值的映射关系，支持以下结构：
- *   - 普通字段: { key: value }，如 { name: "John" }
- *   - 模糊查询: { key: { value: "John", fuzzy: true } }，如 { name: { value: "John", fuzzy: true } }
- *   - “或”关系字段: { orFields: [{ field: 'field1', value: { value: 'value1', fuzzy: true } }, { field: 'field2', value: 'value2' }] }
- * @param {number} [pageNum] - 当前页码，分页时的起始页，默认为 1。
- * @param {number} [pageSize] - 每页记录数，指定分页大小，默认为不分页。
- * @param {string} [orderBy] - 排序字段，格式为 "field ASC" 或 "field DESC"。
- * @param {boolean} [returnCount=true] - 是否返回总记录数，用于分页场景下获取数据总量。
+ * @description: 通用查询函数，支持多表连接查询，同时支持分页、排序和多条件过滤（包括模糊查询与“或”条件）。此函数构建 SQL 查询语句并执行查询操作，返回符合条件的记录及可选的记录总数。
+ *
+ * @param {any} db - 数据库连接对象，通常是 MySQL、PostgreSQL 等数据库的连接实例，用于执行查询操作。
+ * @param {string} tableName - 主表名称，用于指定查询的基础表，查询时会基于此表。
+ * @param {Record<string, any>} [filters] - 查询条件字段和值的映射关系，支持以下结构：
+ *   - 普通字段: { key: value }，如 { name: "John" }。
+ *   - 模糊查询: { key: { value: "John", fuzzy: true } }，如 { name: { value: "John", fuzzy: true } }，使用 `LIKE` 查询。
+ *   - “或”条件: { orFields: [{ field: 'field1', value: { value: 'value1', fuzzy: true } }, { field: 'field2', value: 'value2' }] }，表示“字段1 = value1 或 字段2 = value2”。
+ * @param {number} [pageNum] - 当前页码，分页时的起始页，默认为 1。如果未指定，则不进行分页。
+ * @param {number} [pageSize] - 每页记录数，指定分页大小，默认为不分页。如果未指定，则不进行分页。
+ * @param {string} [orderBy] - 排序字段，格式为 "field ASC" 或 "field DESC"。用于指定查询结果的排序方式。
+ * @param {boolean} [returnCount=true] - 是否返回总记录数，用于分页场景下获取数据总量，默认为 `true`。如果为 `false`，则不返回总记录数。
  * @param {Array<{ table: string; on: string; type?: string }>} [joins=[]] - 多表连接信息，支持指定关联表、连接条件和连接类型。格式如下：
  *   - `table`: 要连接的表名。
  *   - `on`: 连接条件，如 "mainTable.field = joinTable.field"。
- *   - `type`: 连接类型（可选），如 "INNER", "LEFT", "RIGHT"，默认值为 "INNER"。
- * @return {Promise<any>} - 返回一个 Promise，包含以下结构：
- *   - `results`: 查询结果数组，包含每条记录的字段。
- *   - `totalCount`: 查询匹配的总记录数（仅在 returnCount 为 true 时返回）。
- * @param {string} topField - 置顶字段
+ *   - `type`: 连接类型（可选），如 "INNER", "LEFT", "RIGHT"。默认为 "INNER"。
+ * @param {string} [topField] - 置顶字段，用于控制查询结果的排序。当设置时，查询结果会根据此字段降序排列，置顶字段优先展示。
+ *
+ * @return {Promise<any>} - 返回一个 `Promise`，该 `Promise` resolve 后会返回一个包含以下结构的对象：
+ *   - `results`: 查询结果数组，包含每条记录的字段。所有时间字段会进行格式化为 "YYYY-MM-DD HH:mm:ss" 格式。
+ *   - `totalCount`: 查询匹配的总记录数（仅在 `returnCount` 为 `true` 时返回）。用于分页场景下展示数据的总量。
  */
 async function queryRecords(params: {
   db: any

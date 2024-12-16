@@ -37,7 +37,7 @@
         </div>
         <div class="title-box cursor-pointer" @click="openLink">
           <p class="line"></p>
-          <p class="name">皖ICP备2021018576号-3</p>
+          <p class="name">XICP备xxxxxxxxx号-3</p>
           <p class="line"></p>
         </div>
         <!-- <div class="icon flex items-center justify-between">
