@@ -2,7 +2,7 @@
 
 ## 运行效果图
 
-![](http://api.k-tech-art.cn:9898/upload/sys/preview.png)
+![](https://raw.githubusercontent.com/MisDzt/KTechArtAdmin/refs/heads/main/preview.png)
 
 ## 开发环境
 
