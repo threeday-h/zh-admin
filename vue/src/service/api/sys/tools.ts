@@ -3,6 +3,7 @@ import { service } from '@/service/index'
 // 上传
 export const upload = (file: File) => {
   let formData = new FormData()
+  formData.append('file', file)
   return service.post<{ size: number; newFilename: string; originalFilename: string; filePath: string }>({ url: '/upload', data: formData })
 }
 
