@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@koa/cors": "^5.0.0",
+    "@koa/multer": "^3.0.2",
     "ali-oss": "^6.21.0",
     "axios": "^1.7.7",
     "child_process": "^1.0.2",

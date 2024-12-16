@@ -1,7 +1,8 @@
 import Router from 'koa-router'
-import moment from 'moment'
+import multer from '@koa/multer'
+import fs from 'fs'
+import path from 'path'
 import { Context } from 'koa'
-const { v4: uuidv4 } = require('uuid')
 
 // 创建路由实例
 const router = new Router({
@@ -16,19 +17,47 @@ const dbTable = {
   user: 'user'
 }
 
-// 上传文件
-router.post('/upload', async (ctx: Context) => {
-  const { files } = ctx.request as any
+// 动态生成上传目录
+function createFolder() {
+  const dateFolder = new Date().toISOString().split('T')[0].replace(/-/g, '')
+  const uploadDir = path.join(__dirname, `../../../public/upload/${dateFolder}`)
 
-  if (!files || !files.file) return ctx.generateResponse(500, 'No file uploaded!')
+  // 检查目录是否存在，不存在则创建
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true })
+  }
 
-  const file = files.file
+  return uploadDir // 返回生成的目录路径
+}
+
+// 设置上传目录
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadDir = createFolder() // 动态生成上传路径
+      cb(null, uploadDir)
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname) // 获取文件扩展名
+      const basename = path.basename(file.originalname, ext)
+      cb(null, `${basename}-${Date.now()}${ext}`) // 生成唯一文件名
+    }
+  }),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 限制文件大小为 10MB
+  }
+})
+
+router.post('/upload', upload.single('file'), async (ctx: Context) => {
+  const file = ctx.file // 获取上传的文件
+
+  if (!file) return ctx.generateResponse(500, 'No file uploaded!')
 
   ctx.generateResponse(200, '上传成功！', {
     size: file.size,
-    newFilename: file.newFilename,
-    originalFilename: file.originalFilename,
-    filePath: file.filepath.split('public/')[1]
+    newFilename: file.filename,
+    originalFilename: file.originalname,
+    filePath: file.path.split('public/')[1]
   })
 })
 

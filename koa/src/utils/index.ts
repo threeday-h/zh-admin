@@ -32,15 +32,12 @@ const sysRole = require('@/routes/sys/role') // 路由
 class App {
   private app: Koa // Koa 实例
   private listenPort: number // 监听端口
-  private dateFolder: string // 日期文件夹
   // 路由实例
   private routes: any = [toolsRouter, sysDict, sysUser, sysRoute, sysRole]
 
   constructor(app: Koa) {
     this.app = app
     this.listenPort = prot
-    // 获取当前日期，格式为 YYYYMMDD
-    this.dateFolder = new Date().toISOString().split('T')[0].replace(/-/g, '')
 
     // 初始化中间件
     this.initializeMiddleware()
@@ -58,43 +55,11 @@ class App {
     }
   }
 
-  // 创建静态资源文件夹
-  private createFolder() {
-    // 根据文件类型设置上传目录
-    const uploadDir = path.join(__dirname, `../../public/upload/${this.dateFolder}`) // 根据文件类型创建根目录
-    // 检查根目录是否存在，不存在则创建
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
-  }
-
   // 初始化中间件
   private initializeMiddleware() {
     // 设置 session 的 secret
     this.app.keys = [config.session.key]
     this.app.use(session(config.session, this.app))
-
-    this.app.use(
-      koaBody({
-        multipart: true,
-        strict: false,
-        formidable: {
-          // 保留文件后缀
-          keepExtensions: true,
-          uploadDir: path.join(__dirname, `../../public/upload/${this.dateFolder}`), //设置上传缓存文件夹
-          maxFileSize: 1024 * 1024 * 10 * 1024, // 设置上传文件大小最大限制，默认1G 1024M
-          onFileBegin: (key: string, file: any) => {
-            const mimeType = file.mimetype.split('/')[1]
-            file.name += `.${mimeType}`
-            this.createFolder()
-          }
-        },
-
-        jsonLimit: '10mb',
-        formLimit: '10mb',
-        textLimit: '10mb'
-      })
-    )
 
     this.app.use(
       bodyParser({
