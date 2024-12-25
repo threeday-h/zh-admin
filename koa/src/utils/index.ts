@@ -1,25 +1,49 @@
 import Koa, { Context } from 'koa'
-import fs from 'fs'
 import path from 'path'
-import https from 'https'
 import config from '@/utils/config'
 import jwt from 'koa-jwt'
+import jsonwebtoken from 'jsonwebtoken'
 import cors from '@koa/cors'
 import session from 'koa-session'
 import bodyParser from 'koa-bodyparser'
-const { koaBody } = require('koa-body')
+import log4js from 'koa-log4'
+import koaCookie from 'koa-cookie'
+// 静态资源
+import staticResource from 'koa-static'
 
-// 全局 定时任务
-require('@/cron/index')
+// 配置 log4js，启用自定义布局
+log4js.configure({
+  appenders: {
+    out: { type: 'console' },
+    app: {
+      type: 'file',
+      filename: 'application.log',
+      maxLogSize: 10485760, // 10 MB
+      backups: 3, // 保留3个备份文件
+      compress: true, // 压缩备份文件
+      layout: {
+        type: 'pattern',
+        pattern: '[%d{yyyy-MM-dd hh:mm:ss}] [%p] %c - %m'
+      }
+    }
+  },
+  categories: {
+    default: { appenders: ['out', 'app'], level: 'info' }
+  }
+})
 
-const { prot, mysql } = require('@/utils/config')
+// 获取 logger 实例
+const logger = log4js.getLogger('app')
+
+const { prot, mysql } = config
+
 // mysql
 const createDbConnection = require('@/mysql/index')
 // 工具类
 import { dbTools } from '@/mysql/tools'
 
-// 静态资源
-const staticResource = require('koa-static')
+// 全局 定时任务
+import '@/cron/index'
 
 // 工具
 const toolsRouter = require('@/routes/tools/index') // 上传
@@ -57,6 +81,10 @@ class App {
 
   // 初始化中间件
   private initializeMiddleware() {
+    // 使用 koa-cookie 中间件
+    this.app.use(koaCookie())
+    // 使用 koa-log4 中间件
+    this.app.use(log4js.koaLogger(logger, { level: 'auto' }))
     // 设置 session 的 secret
     this.app.keys = [config.session.key]
     this.app.use(session(config.session, this.app))
@@ -66,7 +94,6 @@ class App {
         enableTypes: ['json', 'form', 'text']
       })
     )
-
     // 跨域
     this.app.use(
       cors({
@@ -86,7 +113,10 @@ class App {
       jwt({
         secret: config.token.singKey,
         algorithms: ['HS256'],
-        debug: true
+        getToken: (ctx: Context) => {
+          const token = ctx.cookies.get('token') // 使用 koa-cookie 获取 token
+          return token
+        }
       }).unless({
         path: config.token.unRouter
       })
@@ -112,6 +142,21 @@ class App {
       const connection = await createDbConnection(mysql)
       // 将连接存储到 ctx 中
       ctx.db = connection
+
+      // 获取用户信息
+      const token = ctx.cookies.get('token')
+
+      if (token) {
+        try {
+          const decoded = jsonwebtoken.verify(token, config.token.singKey, { algorithms: ['HS256'] })
+          console.log('Decoded token:', decoded)
+          ctx.state.user = decoded // 将解码后的用户信息存储到 ctx.state.user
+          // 存入日志
+          logger.info(`${JSON.stringify(decoded)} 访问了 ${ctx.request.url}`)
+        } catch (err) {
+          console.error('Token verification failed:', err.message)
+        }
+      }
 
       try {
         await next()
