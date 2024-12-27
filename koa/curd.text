@@ -1,0 +1,93 @@
+
+import Router from 'koa-router';
+import { Context } from 'koa';
+
+interface Sys_menuType {
+  menu_id: number;
+  menu_name: string;
+  parent_id?: number;
+  order_num?: number;
+  path?: string;
+  component?: string;
+  query?: string;
+  route_name?: string;
+  is_frame?: number;
+  is_cache?: any;
+  menu_type?: any;
+  visible?: any;
+  status?: any;
+  perms?: string;
+  icon?: string;
+  create_by?: string;
+  create_time?: Date;
+  update_by?: string;
+  update_time?: Date;
+  remark?: string;
+  del_flag?: number;
+}
+
+
+const router = new Router({
+  prefix: '/api/1/sys_menu'
+});
+
+// 获取所有记录
+router.get('/list', async (ctx: Context) => {
+  const { pageNum, pageSize, ...filters } = ctx.request.query;
+  const results = await ctx.dbTools.queryRecords({
+    db: ctx.db,
+    tableName: 'sys_menu',
+    filters,
+    pageNum: Number(pageNum),
+    pageSize: Number(pageSize),
+  });
+  ctx.generateResponse(200, '获取数据成功', results);
+});
+
+// 获取单个记录
+router.get('/:id', async (ctx: Context) => {
+  const { id } = ctx.params;
+  const results = await ctx.dbTools.queryRecords({
+    db: ctx.db,
+    tableName: 'sys_menu',
+    filters: { menu_id: id },
+  });
+  ctx.generateResponse(200, '获取数据成功', results);
+});
+
+// 新增记录
+router.post('/add', async (ctx: Context) => {
+  const body = ctx.request.body as Sys_menuType;
+  await ctx.dbTools.insertRecord({
+    db: ctx.db,
+    tableName: 'sys_menu',
+    data: body,
+  });
+  ctx.generateResponse(200, '新增成功');
+});
+
+// 修改记录
+router.post('/update/:id', async (ctx: Context) => {
+  const { id } = ctx.params;
+  const body = ctx.request.body as Sys_menuType;
+  await ctx.dbTools.updateRecord({
+    db: ctx.db,
+    tableName: 'sys_menu',
+    data: body,
+    identifier: { menu_id: id },
+  });
+  ctx.generateResponse(200, '修改成功');
+});
+
+// 删除记录
+router.post('/delete/:id', async (ctx: Context) => {
+  const { id } = ctx.params;
+  await ctx.dbTools.deleteRecord({
+    db: ctx.db,
+    tableName: 'sys_menu',
+    identifier: { menu_id: id },
+  });
+  ctx.generateResponse(200, '删除成功');
+});
+
+export default router;

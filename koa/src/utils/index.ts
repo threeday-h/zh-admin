@@ -102,7 +102,7 @@ class App {
     )
 
     // 设置静态资源目录
-    const staticPath = path.join(__dirname, '../../public')
+    const staticPath = path.join(process.cwd(), 'public')
 
     this.app.use(staticResource(staticPath))
   }

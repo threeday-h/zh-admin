@@ -11,7 +11,7 @@
  Target Server Version : 80034 (8.0.34)
  File Encoding         : 65001
 
- Date: 16/12/2024 10:01:03
+ Date: 27/12/2024 15:07:59
 */
 
 SET NAMES utf8mb4;
@@ -218,7 +218,7 @@ CREATE TABLE `sys_user` (
 -- Records of sys_user
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_user` (`user_id`, `dept_id`, `user_name`, `nick_name`, `user_type`, `email`, `phonenumber`, `sex`, `avatar`, `password`, `status`, `del_flag`, `login_ip`, `login_date`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`, `role_key`, `login_os`, `login_browser`, `login_address`) VALUES (103, NULL, 'admin', 'admin', '00', 'KTechArtAdmin@qq.com', '18888888888', '0', 'upload/20241106/649e6ed4d9e2033fed6863101.png', 'e2fa05602ce8a0b1e9d7527bab3b4e7a:8a098e1790eaa95f03a6e49da28e4106', '0', '0', '127.0.0.1', '2024-12-16 09:40:24', '', '2024-10-30 16:06:04', '', '2024-11-06 21:21:44', 'admin', 'admin', 'Mac OS X 10.15.7', 'Chrome 131.0.0', '未知国家,未知省份,未知城市');
+INSERT INTO `sys_user` (`user_id`, `dept_id`, `user_name`, `nick_name`, `user_type`, `email`, `phonenumber`, `sex`, `avatar`, `password`, `status`, `del_flag`, `login_ip`, `login_date`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`, `role_key`, `login_os`, `login_browser`, `login_address`) VALUES (103, NULL, 'admin', 'admin', '00', 'KTechArtAdmin@qq.com', '18888888888', '0', 'upload/sys/avater.gif', 'e2fa05602ce8a0b1e9d7527bab3b4e7a:8a098e1790eaa95f03a6e49da28e4106', '0', '0', '127.0.0.1', '2024-12-25 15:34:53', '', '2024-10-30 16:06:04', 'admin', '2024-12-25 15:53:10', 'admin', 'admin', 'Mac OS X 10.15.7', 'Chrome 131.0.0', '未知国家,未知省份,未知城市');
 INSERT INTO `sys_user` (`user_id`, `dept_id`, `user_name`, `nick_name`, `user_type`, `email`, `phonenumber`, `sex`, `avatar`, `password`, `status`, `del_flag`, `login_ip`, `login_date`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`, `role_key`, `login_os`, `login_browser`, `login_address`) VALUES (104, NULL, '测试', '测试1', '00', '124@qq.com', '16666666666', '0', 'upload/sys/avater.gif', 'b238243840b30ade6e4523262507e63e:faa65f28239da897d48b5cb6bd7c5afd', '0', '0', '127.0.0.1', '2024-11-07 16:32:47', 'admin', '2024-11-07 15:57:00', 'admin', '2024-12-16 09:44:53', NULL, 'common', 'Mac OS X 10.15.7', 'Chrome 130.0.0', '未知国家,未知省份,未知城市');
 COMMIT;
 

@@ -9,7 +9,7 @@ const mysql = config.mysql
 job.createCronJob(
   '0 0 0 * * *',
   async () => {
-    const backupDir = path.join(__dirname, '../../mysql/backups')
+    const backupDir = path.join(process.cwd(), 'mysql/backups')
     const dateFolder = new Date().toISOString().split('T')[0].replace(/-/g, '')
     const backupFile = path.join(backupDir, `${dateFolder}.sql`)
     const dumpCommand = `mysqldump -h ${mysql.host} -u ${mysql.user} -p${mysql.password} ${mysql.database} > ${backupFile}`

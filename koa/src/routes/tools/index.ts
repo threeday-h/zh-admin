@@ -20,8 +20,7 @@ const dbTable = {
 // 动态生成上传目录
 function createFolder() {
   const dateFolder = new Date().toISOString().split('T')[0].replace(/-/g, '')
-  const uploadDir = path.join(__dirname, `../../../public/upload/${dateFolder}`)
-
+  const uploadDir = path.join(process.cwd(), `public/upload/${dateFolder}`)
   // 检查目录是否存在，不存在则创建
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true })

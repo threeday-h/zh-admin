@@ -11,15 +11,21 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "lib": ["es2015"],
-    "outDir": "./client",
-    // 显式指定 moment 类型
+    "outDir": "./dist",
+    "rootDir": "./",
     "typeRoots": ["./node_modules/@types", "types"],
-    "baseUrl": "./src",
+    "types": ["node"],
+    "baseUrl": "./",
+    // "paths": {
+    //   "@/*": ["./*"]
+    // },
     "paths": {
-      "@/*": ["./*"]
-    },
-  
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "app.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

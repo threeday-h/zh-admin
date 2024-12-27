@@ -4,7 +4,7 @@ const path = require('path')
 
 const moduleAlias = require('module-alias')
 
-moduleAlias.addAlias('@', path.join(__dirname, '/src'))
+moduleAlias.addAlias('@', path.join(process.cwd(), '/src'))
 
 const App = require('@/utils/index')
 

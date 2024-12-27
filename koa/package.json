@@ -6,7 +6,9 @@
   "scripts": {
     "start": "ts-node-dev -P tsconfig.json app.ts",
     "nodemon": "nodemon --exec ts-node app.ts",
-    "db": "ts-node db.ts"
+    "db": "ts-node db.ts",
+    "curd": "ts-node curd.ts",
+    "build": "tsc && cpx 'public/**/*' dist/public"
   },
   "author": "",
   "license": "ISC",
@@ -43,13 +45,18 @@
     "wechatpay-node-v3": "^2.2.1"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.26.0",
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.0",
     "@types/koa-bodyparser": "^4.3.12",
     "@types/koa-multer": "^1.0.4",
     "@types/koa-router": "^7.4.8",
-    "@types/moment": "^2.13.0",
+    "@types/moment-timezone": "^0.5.30",
     "@types/node": "^22.10.2",
     "@types/node-schedule": "^2.1.7",
     "@types/uuid": "^10.0.0",
+    "builtin-modules": "^1.1.1",
+    "cpx": "^1.5.0",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
