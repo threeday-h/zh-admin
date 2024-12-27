@@ -19,17 +19,15 @@
 - MySQL（5.7/8.0）
   - 5.7 版本sql路径（koa/src/mysql/update/modified_koa.sql）
   - 8.0 版本sql路径（koa/src/mysql/database/koa.sql）
-
 - 启动命令 npm run start
 - 转换sql文件 8.0转5.7 npm run db
   - 8.0版本sql文件需要存放（koa/src/mysql/database/xxx.sql）
   - 执行命令后 5.7 版本sql 存放（koa/src/mysql/update/modified_xxx.sql）
-
 - 相关配置文件（mysql、token、prot、session 等）
   - 配置文件路径（koa/src/utils/config）
 
 
-## 后台管理系统
+## 后台管理系统（账号/密码：admin/123456）
 
 ### 环境简介
 该后台管理系统模版集成了以下技术：
@@ -199,6 +197,30 @@ const handlePaginationChange = (pagination) => {
 
 - **动态sql查询函数**：用于快速实现对表的增删改查（已经挂载到 ctx: Koa.Context）。
 - **动态定时任务函数**：用于快速构造定时任务。
+
+### 动态生成CURD
+
+- 相关配置文件（根目录/curd.ts）
+
+```typescript
+async function main() {
+  const dbConfig = config.mysql
+  // 表名
+  const tableName = 'sys_menu'
+  // 接口前缀
+  const prefix = '/api'
+  const columns: any = await getTableStructure(dbConfig, tableName)
+  const crudCode = generateCrudCode(tableName, columns, prefix)
+  
+  fs.writeFile('curd.text', crudCode, 'utf8', (err) => {
+    if (err) throw err
+    console.log('File has been saved!')
+  })
+}
+```
+
+- 启动命令（npm run curd）
+- 结果查询（根目录/curd.text）
 
 ### 数据库工具文档
 

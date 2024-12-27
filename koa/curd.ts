@@ -111,12 +111,13 @@ export default router;
 
 async function main() {
   const dbConfig = config.mysql
-
+  // 表名
   const tableName = 'sys_menu'
+  // 接口前缀
   const prefix = '/api'
   const columns: any = await getTableStructure(dbConfig, tableName)
   const crudCode = generateCrudCode(tableName, columns, prefix)
-
+  
   fs.writeFile('curd.text', crudCode, 'utf8', (err) => {
     if (err) throw err
     console.log('File has been saved!')
