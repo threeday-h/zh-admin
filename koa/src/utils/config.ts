@@ -23,8 +23,8 @@ export = {
     //用户名，没有可不填
     user: 'root',
     //密码，没有可不填
-    password: '12345678',
-    database: 'koa'
+    password: '123456',
+    database: 'my-koa'
   },
   crypto: {
     key

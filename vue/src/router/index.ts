@@ -1,64 +1,78 @@
-import { createRouter, createWebHistory, RouteMeta, RouteRecordRaw, createWebHashHistory } from 'vue-router'
-import { useSysStore } from '@/store/modules/sys'
-import * as nProgress from 'nprogress'
-import 'nprogress/nprogress.css'
-import cookieTools from '@/utils/cookie'
+import { createRouter, createWebHistory, RouteMeta, RouteRecordRaw, createWebHashHistory } from "vue-router"
+import { useSysStore } from "@/store/modules/sys"
+import * as nProgress from "nprogress"
+import "nprogress/nprogress.css"
+import cookieTools from "@/utils/cookie"
 
 nProgress.configure({
-  easing: 'ease', // 动画方式
-  speed: 500, // 递增进度条的速度
+  easing: "ease", // 动画方式
+  speed: 100, // 递增进度条的速度
   showSpinner: false, // 是否显示加载 icon
-  trickleSpeed: 200, // 自动递增间隔
+  trickleSpeed: 10, // 自动递增间隔
   minimum: 0.3 // 初始化时的最小百分比
 })
 
 // 白名单
-const whiteList = ['/login', '/404']
+const whiteList = ["/login", "/404"]
 
 export const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'layout',
-    redirect: '/index',
-    component: () => import('@/layout/index.vue'),
+    path: "/",
+    name: "layout",
+    redirect: "/indexMoudle",
+    component: () => import("@/layout/index.vue"),
     children: [
       {
-        path: '/index',
-        name: 'home',
-        component: () => import('@/views/index.vue'),
+        path: "/index",
+        name: "Index",
+        component: () => import("@/views/index.vue"),
         meta: {
-          name: '首页',
+          name: "首页",
           keepAlive: true
         }
       },
       {
-        path: '/profile',
-        name: 'profile',
-        component: () => import('@/views/sys/user/profile.vue'),
+        path: "/profile",
+        name: "profile",
+        component: () => import("@/views/sys/user/profile.vue"),
         meta: {
-          name: '用户中心',
+          name: "用户中心",
           keepAlive: true
         }
       }
     ]
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/login.vue'),
+    path: "/indexMoudle",
+    name: "IndexMoudle",
+    component: () => import("@/views/indexMoudle/index.vue"),
     meta: {
-      name: '登录',
+      name: "首页",
       keepAlive: true
     }
   },
   {
-    path: '/404',
-    name: '404',
-    component: () => import('@/views/404.vue'),
+    path: "/login",
+    name: "login",
+    component: () => import("@/views/login.vue"),
     meta: {
-      name: '404',
+      name: "登录",
       keepAlive: true
     }
+  },
+  {
+    path: "/404",
+    name: "404",
+    component: () => import("@/views/404.vue"),
+    meta: {
+      name: "404",
+      keepAlive: true
+    }
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    // path: '/:catchAll(.*)',
+    component: () => import("@/views/404.vue")
   }
 ]
 
@@ -74,13 +88,14 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   nProgress.start()
 
-  const token = cookieTools.getCookie('token')
+  const token = cookieTools.getCookie("token")
+  // console.log("token", token)
 
   // 跳转到登录页
-  if (!token && !whiteList.includes(to.path)) return next('/login')
+  if (!token && !whiteList.includes(to.path)) return next("/login")
 
   // 已登录时跳转到首页
-  if (to.path === '/login' && token) return next('/')
+  if (to.path === "/login" && token) return next("/")
 
   // 白名单路径直接放行
   if (whiteList.includes(to.path)) return next()
@@ -89,7 +104,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (!menu.length) {
     await getMenu()
-    console.log('获取全部路由 =>', router.getRoutes())
+    console.log("获取全部路由 =>", router.getRoutes())
     // 重定向回当前路径
     return next(to.fullPath)
   }
@@ -99,7 +114,7 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.afterEach(async (to: any) => {
-  if (to.meta.name !== '首页' && to.meta.name !== '登录' && to.name !== '404') {
+  if (to.meta.name !== "首页" && to.meta.name !== "登录" && to.name !== "404") {
     const sysStore = useSysStore()
     sysStore.addRouterTags({
       path: to.path,

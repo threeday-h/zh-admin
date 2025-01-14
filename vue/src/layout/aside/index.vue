@@ -1,8 +1,8 @@
 <template>
   <div class="aside" :style="{ backgroundColor: isDarkTheme ? '#2d384c' : '' }">
     <div class="name" :style="{ backgroundColor: !isDarkTheme ? '#fff' : '', color: isDarkTheme ? '#fff' : '#001529' }">
-      <span v-if="sysStore.collapse">V3</span>
-      <span v-if="!sysStore.collapse">KTechArtAdmin V3</span>
+      <span v-if="sysStore.collapse">Lzh</span>
+      <span v-if="!sysStore.collapse" @click="handleBackIndex">{{ module_name }}</span>
     </div>
     <div class="menu">
       <el-menu
@@ -51,20 +51,22 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { useSysStore } from '@/store/modules/sys'
+import { useRoute, useRouter } from "vue-router"
+import { useSysStore } from "@/store/modules/sys"
 
 const route = useRoute()
+const router = useRouter()
 const sysStore = useSysStore()
 
 // 判断当前主题是否为暗色
-const isDarkTheme = computed(() => sysStore.sideTheme === 'theme-dark')
+const isDarkTheme = computed(() => sysStore.sideTheme === "theme-dark")
+const module_name = computed(() => sysStore.$state.module_name.name)
 
 const active = ref()
 
 watch(
   () => route,
-  (val) => {
+  val => {
     active.value = val.path
   },
   {
@@ -75,20 +77,31 @@ watch(
 
 // 过滤菜单项，保留 visible === 1
 const filteredMenu = computed(() => {
-  return sysStore.$state.menu.filter((item) => Number(item.visible) !== 1)
+  console.log("当前菜单列表:", sysStore.$state.menu)
+  console.log("当前模块:", sysStore.$state.module_name)
+
+  return sysStore.$state.menu.filter(
+    (item: any) =>
+      // 过滤掉隐藏的菜单，同时匹配当前模块
+      Number(item.visible) !== 1 && item.module_name === sysStore.$state.module_name.module_name
+  )
 })
 
 // 递归过滤子菜单
 const filterChildren = (children: any[]) => {
   return children
-    .filter((ii) => Number(ii.visible) !== 1)
-    .map((ii) => {
+    .filter(ii => Number(ii.visible) !== 1)
+    .map(ii => {
       // 如果该子菜单有子项，则递归过滤
       if (ii.children && ii.children.length > 0) {
         ii.children = filterChildren(ii.children)
       }
       return ii
     })
+}
+
+const handleBackIndex = () => {
+  router.push("/")
 }
 </script>
 
@@ -101,6 +114,7 @@ const filterChildren = (children: any[]) => {
 
   .name {
     @apply text-4 font-6 h-10 flex items-center justify-center;
+    cursor: pointer;
   }
   .menu {
     height: calc(100vh - 40px);

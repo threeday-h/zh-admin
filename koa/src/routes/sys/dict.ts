@@ -1,5 +1,5 @@
-import Router from 'koa-router'
-import { Context } from 'koa'
+import Router from "koa-router"
+import { Context } from "koa"
 
 interface DictType {
   dict_id?: number
@@ -18,22 +18,22 @@ interface DictValue {
 // 创建路由实例
 const router = new Router({
   //设置前缀
-  prefix: '/api/sys'
+  prefix: "/api/sys"
 })
 
 // 相关表名
 const dbTable = {
-  dict: 'sys_dict_type',
-  dictValue: 'sys_dict_data'
+  dict: "sys_dict_type",
+  dictValue: "sys_dict_data"
 }
 
 // 新增字典类型
-router.post('/add/dict/type', async (ctx: Context) => {
+router.post("/add/dict/type", async (ctx: Context) => {
   const body = ctx.request.body as DictType
 
   const { dict_name, dict_type } = body
 
-  if (!dict_name || !dict_type) return ctx.generateResponse(500, 'dict_name dict_type 不为空')
+  if (!dict_name || !dict_type) return ctx.generateResponse(500, "dict_name dict_type 不为空")
 
   const { results, totalCount } = await ctx.dbTools.queryRecords({
     db: ctx.db,
@@ -41,7 +41,7 @@ router.post('/add/dict/type', async (ctx: Context) => {
     filters: { dict_type }
   })
 
-  if (totalCount) return ctx.generateResponse(500, '字典类型已存在')
+  if (totalCount) return ctx.generateResponse(500, "字典类型已存在")
 
   await ctx.dbTools.insertRecord({
     db: ctx.db,
@@ -49,16 +49,16 @@ router.post('/add/dict/type', async (ctx: Context) => {
     data: { ...body, create_time: ctx.dbTools.getCurrentTimestamp() }
   })
 
-  ctx.generateResponse(200, '新增成功')
+  ctx.generateResponse(200, "新增成功")
 })
 
 // 修改字典类型
-router.post('/alter/dict/type', async (ctx: Context) => {
+router.post("/alter/dict/type", async (ctx: Context) => {
   const body = ctx.request.body as DictType
 
   const { dict_id, dict_name, dict_type } = body
 
-  if (!dict_id || !dict_name || !dict_type) return ctx.generateResponse(500, 'dict_id, dict_name dict_type 不为空')
+  if (!dict_id || !dict_name || !dict_type) return ctx.generateResponse(500, "dict_id, dict_name dict_type 不为空")
 
   await ctx.dbTools.updateRecord({
     db: ctx.db,
@@ -67,16 +67,16 @@ router.post('/alter/dict/type', async (ctx: Context) => {
     identifier: { dict_id }
   })
 
-  ctx.generateResponse(200, '修改成功')
+  ctx.generateResponse(200, "修改成功")
 })
 
 // 删除字典类型
-router.post('/delete/dict/type', async (ctx: Context) => {
+router.post("/delete/dict/type", async (ctx: Context) => {
   const body = ctx.request.body as DictType
 
   const { dict_id } = body
 
-  if (!dict_id) return ctx.generateResponse(500, 'dict_id 不为空')
+  if (!dict_id) return ctx.generateResponse(500, "dict_id 不为空")
 
   await ctx.dbTools.deleteRecord({
     db: ctx.db,
@@ -84,11 +84,11 @@ router.post('/delete/dict/type', async (ctx: Context) => {
     identifier: { dict_id }
   })
 
-  ctx.generateResponse(200, '删除成功')
+  ctx.generateResponse(200, "删除成功")
 })
 
 // 查询字典类型
-router.get('/list/dict/type', async (ctx: Context) => {
+router.get("/list/dict/type", async (ctx: Context) => {
   const { dict_name, dict_type, pageNum, pageSize } = ctx.request.query
 
   // 筛选条件
@@ -97,7 +97,7 @@ router.get('/list/dict/type', async (ctx: Context) => {
     dict_type
   }
 
-  const orderBy = 'create_time DESC' // 按创建时间降序排序
+  const orderBy = "create_time DESC" // 按创建时间降序排序
 
   const { results, totalCount } = await ctx.dbTools.queryRecords({
     db: ctx.db,
@@ -108,11 +108,11 @@ router.get('/list/dict/type', async (ctx: Context) => {
     orderBy
   })
 
-  ctx.generateResponse(200, '获取数据成功', { list: results, total: totalCount })
+  ctx.generateResponse(200, "获取数据成功", { list: results, total: totalCount })
 })
 
 // 字典值列表
-router.get('/list/dict/value', async (ctx: Context) => {
+router.get("/list/dict/value", async (ctx: Context) => {
   const { dict_type, pageNum, pageSize } = ctx.request.query
 
   // 筛选条件
@@ -121,7 +121,7 @@ router.get('/list/dict/value', async (ctx: Context) => {
     del_flag: 0
   }
 
-  const orderBy = 'dict_sort ASC' // 按创建时间降序排序
+  const orderBy = "dict_sort ASC" // 按创建时间降序排序
 
   const { results, totalCount } = await ctx.dbTools.queryRecords({
     db: ctx.db,
@@ -132,16 +132,17 @@ router.get('/list/dict/value', async (ctx: Context) => {
     orderBy
   })
 
-  ctx.generateResponse(200, '获取数据成功', { list: results, total: totalCount })
+  ctx.generateResponse(200, "获取数据成功", { list: results, total: totalCount })
 })
 
 // 新增字典值
-router.post('/add/dict/value', async (ctx: Context) => {
+router.post("/add/dict/value", async (ctx: Context) => {
   const body = ctx.request.body as DictValue
 
   const { dict_type, dict_value, dict_label, dict_sort } = body
 
-  if (!dict_type || !dict_value || !dict_label || !dict_sort) return ctx.generateResponse(500, 'dict_type,dict_value,dict_label,dict_sort 不为空')
+  if (!dict_type || !dict_value || !dict_label || !dict_sort)
+    return ctx.generateResponse(500, "dict_type,dict_value,dict_label,dict_sort 不为空")
 
   await ctx.dbTools.insertRecord({
     db: ctx.db,
@@ -149,16 +150,16 @@ router.post('/add/dict/value', async (ctx: Context) => {
     data: { ...body, create_time: ctx.dbTools.getCurrentTimestamp() }
   })
 
-  ctx.generateResponse(200, '新增成功')
+  ctx.generateResponse(200, "新增成功")
 })
 
 // 修改
-router.post('/alter/dict/value', async (ctx: Context) => {
+router.post("/alter/dict/value", async (ctx: Context) => {
   const body = ctx.request.body as DictValue
 
   const { dict_code } = body
 
-  if (!dict_code) return ctx.generateResponse(500, 'dict_code 不为空')
+  if (!dict_code) return ctx.generateResponse(500, "dict_code 不为空")
 
   await ctx.dbTools.updateRecord({
     db: ctx.db,
@@ -167,16 +168,16 @@ router.post('/alter/dict/value', async (ctx: Context) => {
     identifier: { dict_code }
   })
 
-  ctx.generateResponse(200, '修改成功')
+  ctx.generateResponse(200, "修改成功")
 })
 
 // 删除
-router.post('/delete/dict/value', async (ctx: Context) => {
+router.post("/delete/dict/value", async (ctx: Context) => {
   const body = ctx.request.body as DictValue
 
   const { dict_code } = body
 
-  if (!dict_code) return ctx.generateResponse(500, 'dict_code 不为空')
+  if (!dict_code) return ctx.generateResponse(500, "dict_code 不为空")
 
   await ctx.dbTools.deleteRecord({
     db: ctx.db,
@@ -184,7 +185,7 @@ router.post('/delete/dict/value', async (ctx: Context) => {
     identifier: { dict_code }
   })
 
-  ctx.generateResponse(200, '删除成功')
+  ctx.generateResponse(200, "删除成功")
 })
 
 module.exports = router

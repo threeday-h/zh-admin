@@ -1,10 +1,10 @@
-import { defineStore } from 'pinia'
-import { getListRouteMenu } from '@/service/api/sys/route'
-import { getDict } from '@/service/api/sys/tools'
-import router from '@/router/index'
-import cookieTools from '@/utils/cookie'
+import { defineStore } from "pinia"
+import { getListRouteMenu } from "@/service/api/sys/route"
+import { getDict } from "@/service/api/sys/tools"
+import router from "@/router/index"
+import cookieTools from "@/utils/cookie"
 
-const components = import.meta.glob('../../views/**')
+const components = import.meta.glob("../../views/**")
 
 // console.log('components', components)
 
@@ -15,19 +15,25 @@ async function loadComponent(componentPath: string) {
   }
 }
 
-const routeTags = sessionStorage.getItem('routerTags') ? JSON.parse(sessionStorage.getItem('routerTags') as string) : []
-export const useSysStore = defineStore('sys', {
+const routeTags = sessionStorage.getItem("routerTags") ? JSON.parse(sessionStorage.getItem("routerTags") as string) : []
+export const useSysStore = defineStore("sys", {
   state: () => ({
     // 侧边菜单
     menu: [] as MenuItem[],
+    // 当前模块
+    module_name: {
+      name: "后台管理",
+      path: "/sys/route",
+      module_name: "backManagement"
+    },
     // 是否折叠
     collapse: false,
     // 布局设置
     setting: false,
     // 主题色
-    theme: '#1861EA',
+    theme: "#1861EA",
     // 主题
-    sideTheme: 'theme-light',
+    sideTheme: "theme-light",
     // 水印
     watermark: true,
     // 路由标签
@@ -38,12 +44,12 @@ export const useSysStore = defineStore('sys', {
   actions: {
     // 初始化主题配置
     initThemeConfig() {
-      const config = cookieTools.getCookie('themeConfig')
+      const config = cookieTools.getCookie("themeConfig")
 
       if (config) {
         const themeConfig = JSON.parse(config)
-        this.sideTheme = themeConfig.sideTheme ?? 'theme-light'
-        this.theme = themeConfig.theme ?? '#1861EA'
+        this.sideTheme = themeConfig.sideTheme ?? "theme-light"
+        this.theme = themeConfig.theme ?? "#1861EA"
         this.watermark = themeConfig.watermark ?? true
       }
 
@@ -53,7 +59,7 @@ export const useSysStore = defineStore('sys', {
     saveThemeConfig() {
       this.setThemeColor()
       cookieTools.setCookie(
-        'themeConfig',
+        "themeConfig",
         JSON.stringify({
           sideTheme: this.sideTheme,
           theme: this.theme,
@@ -64,16 +70,16 @@ export const useSysStore = defineStore('sys', {
     // 设置动态主题颜色
     setThemeColor() {
       // 动态更新 Element Plus 的 CSS 变量
-      document.documentElement.style.setProperty('--el-color-primary', this.theme)
+      document.documentElement.style.setProperty("--el-color-primary", this.theme)
     },
     // 重置主题配置
     resetThemeConfig() {
-      this.theme = '#1861EA'
-      this.sideTheme = 'theme-light'
+      this.theme = "#1861EA"
+      this.sideTheme = "theme-light"
       this.watermark = true
       this.setThemeColor()
       cookieTools.setCookie(
-        'themeConfig',
+        "themeConfig",
         JSON.stringify({
           sideTheme: this.sideTheme,
           theme: this.theme,
@@ -85,7 +91,7 @@ export const useSysStore = defineStore('sys', {
     addRouterTags(route: tagsType) {
       const find = this.routerTags.find((item: tagsType) => item.name === route.name)
       if (!find) this.routerTags.push(route)
-      sessionStorage.setItem('routerTags', JSON.stringify(this.routerTags))
+      sessionStorage.setItem("routerTags", JSON.stringify(this.routerTags))
     },
     // 删除路由标签
     delRouterTags(name: string) {
@@ -93,12 +99,12 @@ export const useSysStore = defineStore('sys', {
       if (index !== -1) this.routerTags.splice(index, 1)
       console.log(this.routerTags)
 
-      sessionStorage.setItem('routerTags', JSON.stringify(this.routerTags))
+      sessionStorage.setItem("routerTags", JSON.stringify(this.routerTags))
     },
     // 递归生成路由
     async generateRoutes(data: MenuItem[]): Promise<Route[]> {
       const routes = await Promise.all(
-        data.map(async (item) => {
+        data.map(async item => {
           return {
             name: item.name,
             path: item.path,
@@ -114,7 +120,11 @@ export const useSysStore = defineStore('sys', {
 
       return routes as any
     },
-    findMenuItem: function (this: ReturnType<typeof useSysStore>, targetIndex: string, menu: MenuItem[] = this.menu): MenuItem | null {
+    findMenuItem: function (
+      this: ReturnType<typeof useSysStore>,
+      targetIndex: string,
+      menu: MenuItem[] = this.menu
+    ): MenuItem | null {
       for (const item of menu) {
         if (item.index === targetIndex) {
           return item // 找到直接匹配
@@ -130,16 +140,16 @@ export const useSysStore = defineStore('sys', {
     },
     addRoute(routes: Route[]) {
       router.addRoute({
-        path: '/:pathMatch(.*)',
-        redirect: '/404',
-        name: 'notMath'
+        path: "/:pathMatch(.*)",
+        redirect: "/404",
+        name: "notMath"
       })
-      routes.forEach((route) => {
-        router.addRoute('layout', route)
+      routes.forEach(route => {
+        router.addRoute("layout", route)
       })
     },
     // 根据获取字典data获取值
-    getDictValue(data_key: string, val: any, key: string = 'dict_value') {
+    getDictValue(data_key: string, val: any, key: string = "dict_value") {
       const find = this.dictData[data_key].children.find((item: any) => item[key] === val)
       return find ?? {}
     },
@@ -159,5 +169,16 @@ export const useSysStore = defineStore('sys', {
       const { data } = await getDict()
       this.dictData = data
     }
+  },
+  // 添加持久化配置
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: "sys_store",
+        storage: localStorage,
+        paths: ["module_name"] // 只持久化 module_name
+      }
+    ]
   }
 })

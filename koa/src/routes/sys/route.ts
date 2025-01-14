@@ -6,6 +6,7 @@ interface DictType {
   parent_id?: number
   icon: string
   menu_name: string
+  module_name: string
 }
 
 // 创建路由实例
@@ -24,7 +25,7 @@ const dbTable = {
 // 获取菜单列表
 
 router.get('/list/route/menu', async (ctx: Context) => {
-  const { menu_name, status } = ctx.request.query
+  const { menu_name, status, module_name } = ctx.request.query
   const { role_key, role_id } = ctx.state.user
 
   // 初始化菜单 ID 数组
@@ -42,6 +43,7 @@ router.get('/list/route/menu', async (ctx: Context) => {
   // 筛选条件
   const filters = {
     menu_name: { value: menu_name, fuzzy: true },
+    module_name: { value: module_name, fuzzy: true },
     status,
     del_flag: 0
   }
@@ -113,9 +115,9 @@ router.post('/add/route/menu', async (ctx: Context) => {
 
   const user = ctx.state.user // 获取用户信息
 
-  const { menu_name, icon, parent_id } = body
+  const { menu_name, icon, parent_id, module_name } = body
 
-  if (!menu_name || !icon) return ctx.generateResponse(500, 'menu_name icon  不为空')
+  if (!menu_name || !icon || !module_name) return ctx.generateResponse(500, 'menu_name、icon、module_name 不能为空')
 
   const { results, totalCount } = await ctx.dbTools.queryRecords({
     db: ctx.db,
@@ -154,11 +156,12 @@ router.post('/delete/route/menu', async (ctx: Context) => {
 
 // 修改菜单
 router.post('/alter/route/menu', async (ctx: Context) => {
-  const body = ctx.request.body as { menu_id: number }
+  const body = ctx.request.body as DictType & { menu_id: number }
 
-  const { menu_id } = body
+  const { menu_id, menu_name, icon, module_name } = body
 
-  if (!menu_id) return ctx.generateResponse(500, 'menu_id 不为空')
+  if (!menu_id) return ctx.generateResponse(500, 'menu_id 不能为空')
+  if (!menu_name || !icon || !module_name) return ctx.generateResponse(500, 'menu_name、icon、module_name 不能为空')
 
   await ctx.dbTools.updateRecord({
     db: ctx.db,

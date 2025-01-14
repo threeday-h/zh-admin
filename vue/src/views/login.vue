@@ -5,7 +5,7 @@
         <div class="title">
           欢迎登录
           <br />
-          欢迎登录 KTechArtAdmin V3
+          LzhAdmin
         </div>
         <div class="desc">
           <img class="w-full h-full" src="@/assets/img/logo.png" alt="" />
