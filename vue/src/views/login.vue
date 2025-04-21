@@ -14,7 +14,15 @@
       <div class="right">
         <div class="title">账号登录</div>
         <div class="form">
-          <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" size="large" label-width="auto" class="demo-ruleForm" status-icon>
+          <el-form
+            ref="ruleFormRef"
+            :model="ruleForm"
+            :rules="rules"
+            size="large"
+            label-width="auto"
+            class="demo-ruleForm"
+            status-icon
+          >
             <el-form-item label="" prop="user_name">
               <el-input v-model="ruleForm.user_name" placeholder="请输入用户名" />
             </el-form-item>
@@ -31,7 +39,14 @@
               <el-checkbox size="large" v-model="ruleForm.remember">记住密码</el-checkbox>
             </el-form-item>
             <el-form-item>
-              <el-button style="width: 100%; height: 50px; background-color: #1861ea; color: #fff" size="large" :loading="loading" @click="submitForm(ruleFormRef)"> 登录 </el-button>
+              <el-button
+                style="width: 100%; height: 50px; background-color: #1861ea; color: #fff"
+                size="large"
+                :loading="loading"
+                @click="submitForm(ruleFormRef)"
+              >
+                登录
+              </el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -55,12 +70,12 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { getCaptcha, postLogin } from '@/service/api/sys/user'
-import type { FormInstance, FormRules } from 'element-plus'
-import { useUserStore } from '@/store/modules/user'
-import { useSysStore } from '@/store/modules/sys'
-import cookieTools from '@/utils/cookie'
+import { useRouter } from "vue-router"
+import { getCaptcha, postLogin } from "@/service/api/sys/user"
+import type { FormInstance, FormRules } from "element-plus"
+import { useUserStore } from "@/store/modules/user"
+import { useSysStore } from "@/store/modules/sys"
+import cookieTools from "@/utils/cookie"
 
 const userStore = useUserStore()
 const sysStore = useSysStore()
@@ -79,22 +94,22 @@ const ruleFormRef = ref<InstanceType<typeof FormInstance>>()
 const loading = ref(false)
 
 let ruleForm = ref<RuleForm>({
-  user_name: '',
-  password: '',
-  code: '',
+  user_name: "",
+  password: "",
+  code: "",
   remember: false
 })
 
 const rules = reactive<InstanceType<typeof FormRules>>({
-  user_name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  code: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
+  user_name: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+  password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+  code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
 })
 
 const captcha = ref()
 
 const openLink = () => {
-  window.open('https://beian.miit.gov.cn', '_blank')
+  window.open("https://beian.miit.gov.cn", "_blank")
 }
 
 const submitForm = async (formEl: InstanceType<typeof FormInstance> | undefined) => {
@@ -103,15 +118,15 @@ const submitForm = async (formEl: InstanceType<typeof FormInstance> | undefined)
     if (valid) {
       if (ruleForm.value.remember) {
         let _ruleForm = { ...ruleForm.value }
-        _ruleForm.code = ''
-        cookieTools.setCookie('loginForm', JSON.stringify(_ruleForm))
+        _ruleForm.code = ""
+        cookieTools.setCookie("loginForm", JSON.stringify(_ruleForm))
       } else {
-        cookieTools.deleteCookie('loginForm')
+        cookieTools.deleteCookie("loginForm")
       }
       loading.value = true
       api.login()
     } else {
-      console.log('error submit!', fields)
+      console.log("error submit!", fields)
     }
   })
 }
@@ -124,28 +139,28 @@ const api = {
   // 登录
   async login() {
     const { code, data, msg } = await postLogin(ruleForm.value)
-    ElMessage({ message: msg, type: code != 200 ? 'error' : 'success' })
+    ElMessage({ message: msg, type: code != 200 ? "error" : "success" })
     setTimeout(() => {
       loading.value = false
     }, 500)
 
     if (code != 200) return api.captcha()
 
-    cookieTools.setCookie('token', data.token)
-    cookieTools.setCookie('userInfo', JSON.stringify(data.userInfo))
+    cookieTools.setCookie("token", data.token)
+    cookieTools.setCookie("userInfo", JSON.stringify(data.userInfo))
 
     userStore.$state.userInfo = data.userInfo
 
     await sysStore.getMenu()
 
-    router.push('/')
+    router.push("/")
   }
 }
 
 onMounted(() => {
   api.captcha()
 
-  const loginForm = cookieTools.getCookie('loginForm')
+  const loginForm = cookieTools.getCookie("loginForm")
 
   if (loginForm) ruleForm.value = JSON.parse(loginForm)
 })
@@ -154,7 +169,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .bg {
   @apply w-[100vw] h-[100vh] overflow-hidden flex items-center justify-center;
-  background-image: url('@/assets/img/login-bg.png');
+  background-image: url("@/assets/img/login-bg.png");
   background-size: cover;
   background-repeat: no-repeat;
 

@@ -37,6 +37,11 @@ const moduleList = [
     name: "工具模块",
     path: "/tools/wordCloud",
     module_name: "tools"
+  },
+  {
+    name: "3D模型模块",
+    path: "/threeModel/machineRoom",
+    module_name: "threeModel"
   }
 ]
 function moduleChose(item: any) {

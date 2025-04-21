@@ -41,6 +41,7 @@ fs.readdirSync("node_modules/element-plus/es/components").map(dirname => {
 export default ({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   return defineConfig({
+    assetsInclude: ['**/*.motion3.json'], 
     base: "/",
     optimizeDeps: {
       include: optimizeDepsElementPlusIncludes
@@ -111,13 +112,13 @@ export default ({ mode }) => {
       // 允许 IP 访问
       host: "0.0.0.0",
       open: true,
-            // 添加 hmr 配置
-            hmr: {
-              overlay: false // 禁用服务器错误遮罩
-            },
+      // 添加 hmr 配置
+      hmr: {
+        overlay: false // 禁用服务器错误遮罩
+      },
       fs: {
         strict: true,
-        allow: ['..']
+        allow: [".."]
       },
       proxy: {
         [env.VITE_APP_BASE_API]: {
