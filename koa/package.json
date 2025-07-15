@@ -1,7 +1,7 @@
 {
   "name": "KTechArtAdmin",
   "version": "1.0.0",
-  "description": "软件定制开发(微信号 K-Tech-Ark )",
+  "description": "软件定制开发(微信号 lzh K-Tech-Ark )",
   "main": "index.js",
   "scripts": {
     "start": "ts-node-dev -P tsconfig.json app.ts",
